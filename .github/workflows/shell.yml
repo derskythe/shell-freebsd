@@ -1,7 +1,13 @@
-
 name: shell
+run-name: "Shell on (${{ github.event_name }})"
 
-on: [push, workflow_dispatch]
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+    - upstream
+    paths:
+    - shell.yaml
 
 jobs:
   runshell:

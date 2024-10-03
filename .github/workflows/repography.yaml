@@ -1,13 +1,22 @@
 name: Repography
+run-name: "Repography on (${{ github.event_name }})"
 
-on: [push, workflow_dispatch]
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+    - upstream
+    paths:
+    - repography.yaml
 
 jobs:
   runshell:
     runs-on: ubuntu-22.04
-    name: Start a freebsd shell
+    name: run
     steps:
     - name: Run
       run: |
-        curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/repography/analyser/master/run.sh | bash -s -- ${{ secrets.TOKEN_REPOGRAPHY }}
+        curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/repography/analyser/master/run.sh > run.sh
+        cat run.sh
+        echo run.sh | bash -s -- ${{ secrets.TOKEN_REPOGRAPHY }}
         ls -lha
