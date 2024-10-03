@@ -1,7 +1,13 @@
 name: Repography
 run-name: "Repography on (${{ github.event_name }})"
 
-on: [push, workflow_dispatch]
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+    - upstream
+    paths:
+    - repography.yaml
 
 jobs:
   runshell:
