@@ -23,11 +23,27 @@ jobs:
         curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/repography/analyser/master/run.sh > run.sh
         echo 'say() { printf "%s\n" "$1"; }' | cat - run.sh > temp && mv temp run.sh
 
+    - name: Install expect
+      run: |
+        sudo apt-get update && sudo apt-get install -y expect
+
+    - name: Create expect script
+      run: |
+        cat << 'EOF' > run_expect.sh
+        #!/usr/bin/expect -f
+        set timeout -1
+        spawn ./run.sh ${{ secrets.TOKEN_REPOGRAPHY }}
+        expect {
+          "Unable to run interactively*" { send "\r" }
+        }
+        EOF
+        chmod +x run_expect.sh
+
     - name: Set execute permission for run.sh
       run: chmod +x run.sh
 
-    - name: Run the analyser script
-      run: ./run.sh ${{ secrets.TOKEN_REPOGRAPHY }}
+    - name: Run the analyser script with expect
+      run: ./run_expect.sh
 
     - name: List files for debugging
       if: failure()
