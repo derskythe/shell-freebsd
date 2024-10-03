@@ -1,5 +1,5 @@
-name: shell
-run-name: "Shell on (${{ github.event_name }})"
+name: FreeBSD Shell
+run-name: "FreeBSD Shell on (${{ github.event_name }})"
 
 on:
   workflow_dispatch: {}
@@ -7,21 +7,23 @@ on:
     branches:
     - upstream
     paths:
-    - shell.yaml
+    - .github/workflows/shell.yaml
 
 jobs:
   runshell:
     runs-on: ubuntu-22.04
-    name: Start a freebsd shell
+    name: Start a FreeBSD shell
     steps:
     - uses: vmactions/cf-tunnel@v0
       id: tunnel
       with:
         protocol: http
         port: 8000
+
     - name: Set envs
       run: echo "TestingDomain=${{steps.tunnel.outputs.server}}" >> $GITHUB_ENV
-    - name: Starting a freebsd VM, please wait. It may take 5 minutes
+
+    - name: Starting a FreeBSD VM, please wait. It may take 5 minutes
       id: shell
       uses: vmactions/freebsd-vm@main
       with:
@@ -37,18 +39,23 @@ jobs:
           env
           freebsd-version
           (ls -lah)
+
     - name: step 1
       run: ssh freebsd <<EOF
           cd $GITHUB_WORKSPACE;
           pwd
-          echo "this is step 1"
+          echo "This is step 1"
+          echo "::notice file=shell.yml,title=Attention::This is step 1"
         EOF
+
     - name: step 2
       run: ssh freebsd <<EOF
           cd $GITHUB_WORKSPACE;
           pwd
-          echo "this is step 2"
+          echo "This is step 2"
+          echo "::notice file=shell.yml,title=Attention::This is step 2"
         EOF
+
     - name: Sleep
       run: for i in $(seq 1 10) ; do echo $i; sleep 1; done
     - uses: neilpang/debugger-action@master
