@@ -1,0 +1,13 @@
+name: Repography
+
+on: [push, workflow_dispatch]
+
+jobs:
+  runshell:
+    runs-on: ubuntu-22.04
+    name: Start a freebsd shell
+    steps:
+    - name: Run
+      run: |
+        curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/repography/analyser/master/run.sh | bash -s -- ${{ secrets.TOKEN_REPOGRAPHY }}
+        ls -lha
