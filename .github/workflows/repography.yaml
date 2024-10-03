@@ -12,21 +12,22 @@ on:
 jobs:
   runshell:
     runs-on: ubuntu-22.04
-    name: run
+    name: Run
     steps:
     
     - name: Check out the repository to the runner
       uses: actions/checkout@v4
       
-    - name: Run
-      shell: bash
+    - name: Download the run.sh script
       run: |
         curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/repography/analyser/master/run.sh > run.sh
-        cat ./run.sh
-        chmod +x ./run.sh
-        # apt-get install git build-essential -y
-        ./run.sh ${{ secrets.TOKEN_REPOGRAPHY }}
-        ls -lha
+        echo 'say() { printf "%s\n" "$1"; }' | cat - run.sh > temp && mv temp run.sh
+
+    - name: Set execute permission for run.sh
+      run: chmod +x run.sh
+
+    - name: Run the analyser script
+      run: ./run.sh ${{ secrets.TOKEN_REPOGRAPHY }}
 
     - name: List files for debugging
       if: failure()
