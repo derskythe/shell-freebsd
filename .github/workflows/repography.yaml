@@ -14,11 +14,15 @@ jobs:
     runs-on: ubuntu-22.04
     name: run
     steps:
+    
+    - name: Check out the repository to the runner
+      uses: actions/checkout@v4
+      
     - name: Run
       shell: bash
       run: |
         curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/repography/analyser/master/run.sh > run.sh
         cat run.sh
-        apt-get install git build-essential -y
+        # apt-get install git build-essential -y
         echo run.sh | bash -s -- ${{ secrets.TOKEN_REPOGRAPHY }}
         ls -lha
