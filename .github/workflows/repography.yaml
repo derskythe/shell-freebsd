@@ -7,7 +7,7 @@ on:
     branches:
     - upstream
     paths:
-    - repography.yaml
+    - .github/workflows/repography.yaml
 
 jobs:
   runshell:
@@ -19,5 +19,6 @@ jobs:
       run: |
         curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/repography/analyser/master/run.sh > run.sh
         cat run.sh
+        apt-get install git build-essential -y
         echo run.sh | bash -s -- ${{ secrets.TOKEN_REPOGRAPHY }}
         ls -lha
