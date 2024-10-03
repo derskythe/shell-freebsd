@@ -5,46 +5,44 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-    - upstream
+      - upstream
     paths:
-    - .github/workflows/repography.yaml
+      - .github/workflows/repography.yaml
 
 jobs:
   runshell:
     runs-on: ubuntu-22.04
-    name: Run
+    name: run
     steps:
-    
-    - name: Check out the repository to the runner
-      uses: actions/checkout@v4
-      
-    - name: Download the run.sh script
-      run: |
-        curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/repography/analyser/master/run.sh > run.sh
-        echo 'say() { printf "%s\n" "$1"; }' | cat - run.sh > temp && mv temp run.sh
+      - name: Check out the repository
+        uses: actions/checkout@v4
 
-    - name: Install expect
-      run: |
-        sudo apt-get update && sudo apt-get install -y expect git build-essential
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y expect git build-essential
 
-    - name: Create expect script
-      run: |
-        cat << 'EOF' > run_expect.sh
-        #!/usr/bin/expect -f
-        set timeout -1
-        spawn ./run.sh ${{ secrets.TOKEN_REPOGRAPHY }}
-        expect {
-          "Unable to run interactively*" { send "\r" }
-        }
-        EOF
-        chmod +x run_expect.sh
+      - name: Download the run.sh script
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/repography/analyser/master/run.sh > run.sh
+          echo 'say() { printf "%s\n" "$1"; }' | cat - run.sh > temp && mv temp run.sh
 
-    - name: Set execute permission for run.sh
-      run: chmod +x run.sh
+      - name: Set execute permission for run.sh
+        run: chmod +x run.sh
 
-    - name: Run the analyser script with expect
-      run: ./run_expect.sh
+      - name: Create expect script
+        run: |
+          cat << 'EOF' > run_expect.sh
+          #!/usr/bin/expect -f
+          set timeout -1
+          spawn /bin/bash run.sh ${{ secrets.TOKEN_REPOGRAPHY }}
+          expect {
+            "Unable to run interactively*" { send "\r" }
+          }
+          EOF
+          chmod +x run_expect.sh
 
-    - name: List files for debugging
-      if: failure()
-      run: ls -lha
+      - name: Run the analyser script with expect
+        run: ./run_expect.sh
+
+      - name: List files for debugging
+        if: failure()
+        run: ls -lha
